@@ -1,6 +1,9 @@
 import * as p from "path";
 import { types, PluginObj } from "babel-core";
-import { parse, PropItemType } from "react-docgen-typescript/lib/parser";
+import {
+  withCompilerOptions,
+  PropItemType,
+} from "react-docgen-typescript/lib/parser";
 
 /**
  * Babel plugin options.
@@ -78,12 +81,15 @@ export default function(babel: { types: typeof types }): PluginObj<State> {
           .relative("./", p.resolve("./", path.hub.file.opts.filename))
           .replace(/\\/g, "/");
 
-        const componentDocs = parse(filePath, {
-          shouldExtractLiteralValuesFromEnum:
-            state.opts.shouldExtractLiteralValuesFromEnum,
-          propFilter: state.opts.propFilter || state.opts,
-          componentNameResolver: state.opts.componentNameResolver,
-        });
+        const componentDocs = withCompilerOptions(
+          { noErrorTruncation: true },
+          {
+            shouldExtractLiteralValuesFromEnum:
+              state.opts.shouldExtractLiteralValuesFromEnum,
+            propFilter: state.opts.propFilter || state.opts,
+            componentNameResolver: state.opts.componentNameResolver,
+          },
+        ).parse(filePath);
 
         componentDocs.forEach(doc => {
           const program = path.scope.getProgramParent().path;

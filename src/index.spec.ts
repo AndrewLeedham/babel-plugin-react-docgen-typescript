@@ -40,6 +40,12 @@ it("extracts literal values from enum, unions and custom types", async () => {
   expect(result.code).toMatchSnapshot();
 });
 
+it("does not truncate large union types", async () => {
+  const result = await transformFile("LargeUnion.tsx");
+
+  expect(result.code).toMatchSnapshot();
+});
+
 function transformFile(fixtureFilename: string, options: PluginOptions = {}) {
   const filePath = path.resolve(__dirname, "__fixtures__", fixtureFilename);
 
